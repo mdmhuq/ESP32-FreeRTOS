@@ -1,35 +1,45 @@
 #if CONFIG_FREERTOS_UNICORE
-static const BaseType_t app_cpu=0;
-#else
-static const BaseType_t app_cpu=1;
+static const BaseType_t app_cpu = 0;
+#else 
+static const BaseType_t app_cpu = 1;
 #endif
 
-static const int led_pin = LED_BUILTIN;
+static const int led_pin = 2;
+int changeTimeVal=500;
 
 
-void taskBlinkLED(void *parameter){
- while(1){
+
+void toggleLEDExcercise(void *parameter){
+
+  while(1){
     digitalWrite(led_pin, HIGH);
-    vTaskDelay(700/portTICK_PERIOD_MS);
+    if (changeTimeVal == 0){
+      changeTimeVal+=500;
+    }else{
+      changeTimeVal-=100;
+    }
+
+    vTaskDelay(changeTimeVal/portTICK_PERIOD_MS);
     digitalWrite(led_pin, LOW);
-    vTaskDelay(300/portTICK_PERIOD_MS);
+    vTaskDelay(changeTimeVal/portTICK_PERIOD_MS);
+
+
+    
   }
 }
 
 void setup() {
- pinMode(led_pin, OUTPUT);
-
-  xTaskCreatePinnedToCore(taskBlinkLED, 
-    "Toggle LED", 
-    1024, 
-    NULL, 
-    1, 
-    NULL, 
-    app_cpu
-  );
+  pinMode(led_pin, OUTPUT);
+  xTaskCreatePinnedToCore(
+  toggleLEDExcercise, 
+  "Toggle LED", 
+  1024, 
+  NULL, 
+  1, 
+  NULL, 
+  app_cpu);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
 
 }
